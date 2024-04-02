@@ -2,13 +2,24 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from numpy import argmax
 import pickle
+import streamlit as st
 
-def get_tokenizer(language: str,english: bool = False):
+
+languages = {
+    "French": "fra",
+    "Deutsch (German)": "deu",
+    "español (Spanish)": "spa",
+    "Italiano (Italian)": "ita",
+    "Português": "por",
+}
+
+
+def get_tokenizer(language: str, english: bool = False):
     if english:
-        with open(f'tokenizers/{language}/eng_tokenizer.pkl', 'rb') as f:
+        with open(f"tokenizers/{language}/eng_tokenizer.pkl", "rb") as f:
             tokenizer = pickle.load(f)
         return tokenizer
-    with open(f'tokenizers/{language}/{language}_tokenizer.pkl', 'rb') as f:
+    with open(f"tokenizers/{language}/{language}_tokenizer.pkl", "rb") as f:
         tokenizer = pickle.load(f)
     return tokenizer
 
@@ -28,14 +39,16 @@ def get_model(language: str):
     model = load_model(f"models/{language}.keras")
     return model
 
+
 def get_word(n, tokenizer):
     for word, index in tokenizer.word_index.items():
         if index == n:
             return word
     return None
 
+
 def get_text(prediction):
-    eng_tokenizer = get_tokenizer("deu",english=True)
+    eng_tokenizer = get_tokenizer("deu", english=True)
     preds_text = []
     for i in prediction:
         temp = []
@@ -56,15 +69,14 @@ def get_text(prediction):
     return preds_text[0]
 
 
-def predict(text: str,language: str):
+@st.cache_data()
+def predict(text: str, language: str):
     tokenizer = get_tokenizer(language=language)
     model = get_model(language=language)
 
-    seq = tokenize(tokenizer=tokenizer,text=text)
+    seq = tokenize(tokenizer=tokenizer, text=text)
 
-    preds = argmax(
-        model.predict(seq.reshape((seq.shape[0], seq.shape[1]))), axis=-1
-    )
+    preds = argmax(model.predict(seq.reshape((seq.shape[0], seq.shape[1]))), axis=-1)
 
     output = get_text(preds)
 
