@@ -32,7 +32,7 @@ def encode_sequences(tokenizer, length, lines):
 
 
 def tokenize(tokenizer, text: str):
-    return encode_sequences(tokenizer, 8, [text])
+    return encode_sequences(tokenizer, 12, [text])
 
 
 def get_model(language: str):
