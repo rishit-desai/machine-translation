@@ -47,8 +47,8 @@ def get_word(n, tokenizer):
     return None
 
 
-def get_text(prediction):
-    eng_tokenizer = get_tokenizer("deu", english=True)
+def get_text(prediction, language):
+    eng_tokenizer = get_tokenizer(language, english=True)
     preds_text = []
     for i in prediction:
         temp = []
@@ -78,6 +78,6 @@ def predict(text: str, language: str):
 
     preds = argmax(model.predict(seq.reshape((seq.shape[0], seq.shape[1]))), axis=-1)
 
-    output = get_text(preds)
+    output = get_text(preds, language=language)
 
     return output
